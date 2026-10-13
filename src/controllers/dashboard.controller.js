@@ -12,11 +12,11 @@ const getChannelStats = asyncHandler(async (req, res) => {
     
     const totalViewsAndVideos = await Video.aggregate([
         {
-            $match : {Owner : req.user._id}
+            $match : {owner : req.user._id}
         },
         {
             $group : {
-                _id : "$Owner",
+                _id : "$owner",
                 totalViews : {$sum : "$views"},
                 totalVideos : {$sum : 1}
             }
@@ -27,7 +27,7 @@ const getChannelStats = asyncHandler(async (req, res) => {
     })
     if (!totalSubscribers) totalSubscribers = 0;
     const videos = await Video.find({
-        Owner: req.user._id
+        owner: req.user._id
     }).select("_id");
 
     const videoIds = videos.map(video => video._id);
