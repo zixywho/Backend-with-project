@@ -6,12 +6,12 @@ import {asyncHandler} from "../utils/asyncHandler.js"
 
 const createTweet = asyncHandler(async (req, res) => {
     //TODO: create tweet
-    const {tweet} = req.body;
-    if (!tweet || !tweet.trim()) {
+    const {content} = req.body;
+    if (!content|| !content.trim()) {
         throw new ApiError(400, "Tweet is required")
     }
     const tweetCreated = await Tweet.create({
-        content : tweet,
+        content : content,
         owner : req.user._id
     })
     if (!tweetCreated){
@@ -25,7 +25,7 @@ const createTweet = asyncHandler(async (req, res) => {
 const getUserTweets = asyncHandler(async (req, res) => {
     // TODO: get user tweets
     const {userId} = req.params;
-    if (isValidObjectId(userId)){
+    if (!isValidObjectId(userId)){
         throw new ApiError(400, "Invalid User Id")
     }
     const tweets = await Tweet.aggregate([
