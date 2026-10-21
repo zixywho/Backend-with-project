@@ -48,19 +48,23 @@ const toggleSubscription = asyncHandler(async (req, res) => {
 })
 
 // controller to return subscriber list of a channel
+
+// Controller to return all subscribers of a channel
 const getUserChannelSubscribers = asyncHandler(async (req, res) => {
-    const {channelId} = req.params
-    if (!isValidObjectId(channelId)){
-        throw new ApiError(400, "channel id is not valid")
+    const { subscriberId } = req.params;
+
+    if (!isValidObjectId(subscriberId)) {
+        throw new ApiError(400, "Channel ID is not valid");
     }
-    const channel = await User.findById(channelId);
+
+    const channel = await User.findById(subscriberId);
 
     if (!channel) {
         throw new ApiError(404, "Channel not found");
     }
 
     const subscribers = await Subscription.find({
-        channel: channelId
+        channel: subscriberId
     }).populate("subscriber", "username fullName avatar");
 
     return res.status(200).json(
@@ -70,24 +74,25 @@ const getUserChannelSubscribers = asyncHandler(async (req, res) => {
             "Channel subscribers fetched successfully"
         )
     );
+});
 
-})
 
-// controller to return channel list to which user has subscribed
+// Controller to return all channels a user has subscribed to
 const getSubscribedChannels = asyncHandler(async (req, res) => {
-    const { subscriberId } = req.params
-    if (!isValidObjectId(subscriberId)) {
-        throw new ApiError(400, "Invalid subscriber ID");
+    const { channelId } = req.params;
+
+    if (!isValidObjectId(channelId)) {
+        throw new ApiError(400, "Subscriber ID is not valid");
     }
 
-    const user = await User.findById(subscriberId);
+    const user = await User.findById(channelId);
 
     if (!user) {
         throw new ApiError(404, "User not found");
     }
 
     const subscriptions = await Subscription.find({
-        subscriber: subscriberId
+        subscriber: channelId
     }).populate("channel", "username fullName avatar");
 
     return res.status(200).json(
@@ -97,7 +102,8 @@ const getSubscribedChannels = asyncHandler(async (req, res) => {
             "Subscribed channels fetched successfully"
         )
     );
-})
+});
+
 
 export {
     toggleSubscription,
